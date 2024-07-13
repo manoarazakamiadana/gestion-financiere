@@ -3,12 +3,16 @@
 {% block title %} Log in {% endblock %}
 
 {% block body %}
-    <h1>Log in</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <table>
-            {{ form.as_table }}
-        </table>
-        <input type="submit" value="Submit">
-    </form>
+    <div class="container">
+        <h1 class="my-3">Log in</h1>
+        <div class="d-flex justify-content-center">
+            <form method="POST" class="w-50">
+                {% csrf_token %}
+                <table class="w-100">
+                    {{ form.as_table }}
+                </table>
+                <button type="submit" class="btn btn-success w-100">Submit</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}

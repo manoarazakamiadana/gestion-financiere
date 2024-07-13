@@ -2,13 +2,30 @@
 
 {% block title %} Sign up {% endblock %}
 
+{% block style %}
+    <style>
+        *, ::before, ::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        #id_username_helptext, td br {
+            display: none;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <h1>Sign up</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <table>
-            {{ form.as_table }}
-        </table>
-        <input type="submit" value="Submit">
-    </form>
+    <div class="container">
+        <h1 class="my-3">Sign up</h1>
+        <div class="d-flex justify-content-center">
+            <form method="POST" class="w-50">
+                {% csrf_token %}
+                <table class="w-100">
+                    {{ form.as_table }}
+                </table>
+                <button type="submit" class="btn btn-success w-100 m-2">Submit</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}
