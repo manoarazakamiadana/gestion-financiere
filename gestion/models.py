@@ -10,15 +10,10 @@ class Gestion(models.Model):
 
 class Domain(models.Model):
     gestion = models.ForeignKey(Gestion, on_delete=models.CASCADE, null=False)
-    name = models.CharField(max_length=20, null=False, unique=True)
-    slug = models.SlugField(max_length=25, unique=True, blank=True)
+    name = models.CharField(max_length=20, null=False)
     description = models.TextField(null=True)
     relation_to_parent_domain = models.ForeignKey("RelationToParentDomain", on_delete=models.SET_NULL, null=True)
     excepted_value = models.FloatField(default=0)
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
 
 class RelationToParentDomain(models.Model):
     parent_domain = models.OneToOneField(Domain, on_delete=models.CASCADE, null=False)

@@ -19,7 +19,6 @@ class RelationToParentDomainAdmin(admin.ModelAdmin):
 class DomainAdmin(admin.ModelAdmin):
     list_display = (
         "name",
-        "slug",
         "description",
         "relation_to_parent_domain",
         "excepted_value",

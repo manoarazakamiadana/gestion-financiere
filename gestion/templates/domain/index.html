@@ -4,30 +4,52 @@
 
 {% block body %}
     <div class="container">
-        <h1 class="my-3">All domain</h1>
-        <a href="{% url 'new-domain' %}"><button class="btn btn-success">New domain</button></a>
+        {% if principal_domain %}
+            <h1 class="my-3">All domain</h1>
+            <a href="{% url 'new-domain' %}"><button class="btn btn-success">New domain</button></a>
+        {% else %}
+            <h1 class="my-3">All subdomain of {{ domain.name|lower }}</h1>
+            <h4>{{ domain.name }}:</h4><p class="mx-5">{{ domain.description }}</p>
+            <a href="{% url 'new-subdomain' id=domain.id %}"><button class="btn btn-primary m-1">Add subdomain</button></a>
+            <!-- Mbola ampiana oe add transaction sy edit domain eto -->
+        {% endif %}
         <!-- Mbola tokony ampiana oe votre solde -->
-        <table class="w-75 m-auto my-3">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for domain in domains %}
+        {% if not domains %}
+            {% if principal_domain %}
+                <h2 class="my-3">There is no domain in your financial monitoring</h2>
+            {% else %}
+                <h2 class="my-3">This domain has no subdomain</h2>
+            {% endif %}
+        {% else %}
+            <table class="w-75 m-auto my-3">
+                <thead>
                     <tr>
-                        <td><p class="m-auto">{{ domain.name }}</p></td>
-                        <td><p class="m-auto">{{ domain.excepted_value|floatformat:0 }} Ar</p></td>
-                        <td>
-                            <button class="btn btn-primary m-1">Add subdomain</button>
-                            <button class="btn btn-success m-1">Add transaction</button>
-                            <button class="btn btn-warning m-1">Edit domain</button>
-                        </td>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>Action</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for domain in domains %}
+                        <tr>
+                            <td><p class="m-auto">{{ domain.name }}</p></td>
+                            <td><p class="m-auto">{{ domain.excepted_value|floatformat:0 }} Ar</p></td>
+                            <td>
+                                <a href="{% url 'subdomain' id=domain.id %}">
+                                    <button class="btn btn-info m-1">View domain</button>
+                                </a>
+                                <a href="{% url 'new-subdomain' id=domain.id %}">
+                                    <button class="btn btn-primary m-1">Add subdomain</button>
+                                </a>
+                                <button class="btn btn-success m-1">Add transaction</button>
+                                <a href="{% url 'edit-domain' id=domain.id %}">
+                                    <button class="btn btn-warning m-1">Edit domain</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
     </div>
 {% endblock %}
