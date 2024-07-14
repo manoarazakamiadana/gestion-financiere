@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Domain{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-3">All domain</h1>
+        <a href="{% url 'new-domain' %}"><button class="btn btn-success">New domain</button></a>
+        <!-- Mbola tokony ampiana oe votre solde -->
+        <table class="w-75 m-auto my-3">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for domain in domains %}
+                    <tr>
+                        <td><p class="m-auto">{{ domain.name }}</p></td>
+                        <td><p class="m-auto">{{ domain.excepted_value|floatformat:0 }} Ar</p></td>
+                        <td>
+                            <button class="btn btn-primary m-1">Add subdomain</button>
+                            <button class="btn btn-success m-1">Add transaction</button>
+                            <button class="btn btn-warning m-1">Edit domain</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

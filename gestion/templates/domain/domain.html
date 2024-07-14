@@ -1,26 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %} Sign up {% endblock %}
-
-{% block style %}
-    <style>
-        *, ::before, ::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        #id_username_helptext, td br, .helptext {
-            display: none;
-        }
-    </style>
-{% endblock %}
+{% block title %}New Domain{% endblock %}
 
 {% block body %}
     <div class="container">
-        <h1 class="my-3">Sign up</h1>
+        <h1 class="my-3">{{ title }}</h1>
         <div class="d-flex justify-content-center">
             <form method="POST" class="w-50">
-                <p>{{ message }}</p>
                 {% csrf_token %}
                 <table class="w-100">
                     {{ form.as_table }}
