@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Gestion, Domain, RelationToParentDomain, Transaction
+from .models import Gestion, Domain, RelationToParentDomain, Transaction, DateInterval
 
 # Register your models here.
 
@@ -21,7 +21,8 @@ class DomainAdmin(admin.ModelAdmin):
         "name",
         "description",
         "relation_to_parent_domain",
-        "excepted_value",
+        "excepted_revenu",
+        "excepted_depense",
         "gestion"
     )
 
@@ -31,5 +32,14 @@ class TransactionAdmin(admin.ModelAdmin):
         "name",
         "description",
         "value",
-        "domain"
+        "domain",
+        "date",
+        "depense"
+    )
+
+@admin.register(DateInterval)
+class DateIntervalAdmin(admin.ModelAdmin):
+    list_display = (
+        "start",
+        "end"
     )

@@ -1,17 +1,58 @@
 {% extends "base.html" %}
 
-{% block title %}Domain{% endblock %}
+{% load filters %}
+
+{% block title %}{{ title }}{% endblock %}
 
 {% block body %}
     <div class="container">
         {% if principal_domain %}
             <h1 class="my-3">All domain</h1>
+            <h3>Solde: {{ solde|floatformat:0|intspace|intspace }} Ar</h3>
+            <div class="d-flex justify-content-between w-50">
+                <p>Revenu total: {{ revenu|floatformat:0|intspace }} Ar</p>
+                <p>Depense total: {{ depense|floatformat:0|intspace }} Ar</p>
+            </div>
             <a href="{% url 'new-domain' %}"><button class="btn btn-success">New domain</button></a>
         {% else %}
             <h1 class="my-3">All subdomain of {{ domain.name|lower }}</h1>
-            <h4>{{ domain.name }}:</h4><p class="mx-5">{{ domain.description }}</p>
-            <a href="{% url 'new-subdomain' id=domain.id %}"><button class="btn btn-primary m-1">Add subdomain</button></a>
-            <!-- Mbola ampiana oe add transaction sy edit domain eto -->
+            <h4>{{ domain.name }}:</h4>
+            <p class="mx-5">{{ domain.description }}</p>
+            <table class="w-75 m-auto my-3">
+                <thead>
+                    <tr>
+                        <th>Excepted depense</th>
+                        <th>Excepted revenu</th>
+                        <th>Depense total</th>
+                        <th>Revenu total</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ domain.excepted_depense|floatformat:0|intspace }} Ar</td>
+                        <td>{{ domain.excepted_revenu|floatformat:0|intspace }} Ar</td>
+                        <td>{{ domain.get_depense_total|floatformat:0|intspace }} Ar</td>
+                        <td>{{ domain.get_revenu_total|floatformat:0|intspace }} Ar</td>
+                        <td>{{ domain.get_solde|floatformat:0|intspace }} Ar</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="d-flex">
+            </div>
+            <!-- mbola ampiana oe total sns -->
+            <a href="{% url 'new-subdomain' id=domain.id %}">
+                <button class="btn btn-primary m-1">Add subdomain</button>
+            </a>
+            <a href="{% url 'edit-domain' id=domain.id %}">
+                <button class="btn btn-warning m-1">Edit domain</button>
+            </a>
+            <a href="{% url 'new-transaction-domain' id=domain.id %}">
+                <button class="btn btn-success m-1">Add transaction</button>
+            </a>
+            <a href="{% url 'transaction' id=domain.id %}">
+                <button class="btn btn-secondary m-1">View transaction</button>
+            </a>
         {% endif %}
         <!-- Mbola tokony ampiana oe votre solde -->
         {% if not domains %}
@@ -21,11 +62,15 @@
                 <h2 class="my-3">This domain has no subdomain</h2>
             {% endif %}
         {% else %}
-            <table class="w-75 m-auto my-3">
+            <table class="w-100 m-auto my-3">
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Value</th>
+                        <th>Excepted depense</th>
+                        <th>Excepted revenu</th>
+                        <th>Depense total</th>
+                        <th>Revenu total</th>
+                        <th>Total</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -33,17 +78,17 @@
                     {% for domain in domains %}
                         <tr>
                             <td><p class="m-auto">{{ domain.name }}</p></td>
-                            <td><p class="m-auto">{{ domain.excepted_value|floatformat:0 }} Ar</p></td>
+                            <td><p class="m-auto">{{ domain.excepted_depense|floatformat:0|intspace }} Ar</p></td>
+                            <td><p class="m-auto">{{ domain.excepted_revenu|floatformat:0|intspace }} Ar</p></td>
+                            <td><p class="m-auto">{{ domain.get_depense_total|floatformat:0|intspace }} Ar</p></td>
+                            <td><p class="m-auto">{{ domain.get_revenu_total|floatformat:0|intspace }} Ar</p></td>
+                            <td><p class="m-auto">{{ domain.get_solde|floatformat:0|intspace }} Ar</p></td>
                             <td>
                                 <a href="{% url 'subdomain' id=domain.id %}">
-                                    <button class="btn btn-info m-1">View domain</button>
+                                    <button class="btn btn-primary m-1">View domain</button>
                                 </a>
-                                <a href="{% url 'new-subdomain' id=domain.id %}">
-                                    <button class="btn btn-primary m-1">Add subdomain</button>
-                                </a>
-                                <button class="btn btn-success m-1">Add transaction</button>
-                                <a href="{% url 'edit-domain' id=domain.id %}">
-                                    <button class="btn btn-warning m-1">Edit domain</button>
+                                <a href="{% url 'transaction' id=domain.id %}">
+                                    <button class="btn btn-secondary m-1">View transaction</button>
                                 </a>
                             </td>
                         </tr>

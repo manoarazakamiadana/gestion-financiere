@@ -1,10 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}{{ action }} Domain{% endblock %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block style %}
+    <style>
+        *, ::before, ::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .errorlist {
+            display: none;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
     <div class="container">
-        <h1 class="my-3">{{ title }}</h1>
+        <h1 class="my-3">{{ action }}</h1>
         <div class="d-flex justify-content-center">
             <form method="POST" class="w-50">
                 {% csrf_token %}

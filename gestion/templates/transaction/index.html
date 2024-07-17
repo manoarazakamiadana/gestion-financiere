@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% load filters %}
+
+{% block title %}Transaction of {{ domain.name|lower }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="my-3">All transaction of {{ domain.name|lower }}</h1>
+        <h4>{{ domain.name }}:</h4><p class="mx-5">{{ domain.description }}</p>
+        <a href="{% url 'new-transaction-domain' id=domain.id %}"><button class="btn btn-primary m-1">Add transaction</button></a>
+        {% if not transactions %}
+            <h2 class="my-3">This domain has no transaction</h2>
+        {% else %}
+            <table class="w-100 m-auto my-3">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                        <tr>
+                            <td><p class="m-auto">{{ transaction.name }}</p></td>
+                            <td><p class="m-auto">{{ transaction.value|floatformat:0|intspace }} Ar</p></td>
+                            <td>
+                                {% if transaction.depense %}
+                                    <p class="text-danger m-auto">Depense</p>
+                                {% else %}
+                                    <p class="text-success m-auto">Revenu</p>
+                                {% endif %}
+                            </td>
+                            <td>{{ transaction.date }}</td>
+                            <td>{{ transaction.description }}</td>
+                            <td>
+                                <a href="{% url 'edit-transaction' id=transaction.id %}">
+                                    <button class="btn btn-warning m-1">Edit transaction</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
