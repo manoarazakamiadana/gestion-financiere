@@ -13,7 +13,8 @@
                 <p>Revenu total: {{ revenu|floatformat:0|intspace }} Ar</p>
                 <p>Depense total: {{ depense|floatformat:0|intspace }} Ar</p>
             </div>
-            <a href="{% url 'new-domain' %}"><button class="btn btn-success">New domain</button></a>
+            <a href="{% url 'new-domain' %}"><button class="btn btn-success">New domain</button></a><br>
+            <a href="{% url 'domain-tree' %}" class="text-dark">See domain tree</a>
         {% else %}
             <h1 class="my-3">All subdomain of {{ domain.name|lower }}</h1>
             <h4>{{ domain.name }}:</h4>

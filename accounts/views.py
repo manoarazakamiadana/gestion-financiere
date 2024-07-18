@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from .forms import SignupForm, LoginForm
-from gestion.models import Gestion
+from gestion.models import Gestion, DateInterval
 
 # Create your views here.
 
@@ -35,6 +35,9 @@ def signup(request):
                 user_gestion = Gestion()
                 user_gestion.owner = user
                 user_gestion.save()
+                user_date_suivi = DateInterval()
+                user_date_suivi.user = user
+                user_date_suivi.save()
                 return redirect("login")
         else:
             return render(request, "accounts/signup.html", {"form": form, "message": "Verifiez votre mot de passe"})

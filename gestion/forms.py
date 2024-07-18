@@ -1,5 +1,5 @@
 from django import forms
-from .models import Domain, Transaction, Gestion
+from .models import Domain, Transaction, Gestion, DateInterval
 
 class DomainForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -58,7 +58,7 @@ class SpeedTransactionForm(forms.ModelForm):
             visible.field.widget.attrs['class'] = 'form-control m-2'
             visible.field.widget.attrs['autocomplete'] = "off"
         self.fields['depense'].widget.attrs['class'] = "m-2"
-        self.fields['domain'].queryset = Domain.objects.filter(gestion=Gestion.objects.get(owner=user))
+        self.fields['domain'].queryset = Domain.objects.filter(gestion=Gestion.objects.get(owner=user)).order_by("name")
     class Meta:
         model = Transaction
         fields = [
@@ -74,6 +74,23 @@ class SpeedTransactionForm(forms.ModelForm):
             "description" : forms.TextInput(attrs={"placeholder": "Description"}),
             "value" : forms.NumberInput(attrs={"placeholder": "Transaction value"}),
             "depense": forms.RadioSelect(choices=[(True, "Depense"), (False, "Revenu")]),
-            "date": forms.DateInput(attrs={"type": "date", "placeholder": "dd/mm/yyyy"}),
+            "date": forms.DateInput(attrs={"type": "date"}),
             "domain": forms.Select()
+        }
+
+class DateIntervalForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(DateIntervalForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control m-2'
+            visible.field.widget.attrs['autocomplete'] = "off"
+    class Meta:
+        model = DateInterval
+        fields = [
+            "start",
+            "end"
+        ]
+        widgets = {
+            "start": forms.DateInput(attrs={"type": "date"}),
+            "end": forms.DateInput(attrs={"type": "date"}),
         }

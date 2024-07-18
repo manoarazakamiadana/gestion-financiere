@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Domain tree{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        {% if tree %}
+            <h1 class="my-3">Domain tree</h1>
+            <p>{{ tree|safe }}</p>
+        {% else %}
+            <h1 class="my-3">There is no domain in your financial monitoring</h1>
+        {% endif %}
+    </div>
+
+{% endblock %}

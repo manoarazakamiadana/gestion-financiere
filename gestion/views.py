@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Gestion, Domain, RelationToParentDomain, Transaction
-from .forms import DomainForm, TransactionForm, SpeedTransactionForm
+from .models import Gestion, Domain, RelationToParentDomain, Transaction, DateInterval
+from .forms import DomainForm, TransactionForm, SpeedTransactionForm, DateIntervalForm
 from datetime import date
 
 # Create your views here.
@@ -14,14 +14,37 @@ def index(request):
 def domain(request):
     domains = Domain.objects.filter(gestion=Gestion.objects.get(owner=request.user), relation_to_parent_domain=None).order_by("name")
     transactions = Transaction.objects.filter(gestion=Gestion.objects.get(owner=request.user))
+    period = DateInterval.objects.get(user=request.user)
     depense = 0
     revenu = 0
+    solde = 0
     for transaction in transactions:
         if transaction.depense:
-            depense += transaction.value
+            solde -= transaction.value
+            if period.start and period.end:
+                if period.start <= transaction.date <= period.end:
+                    depense += transaction.value
+            elif period.start:
+                if period.start <= transaction.date:
+                    depense += transaction.value
+            elif period.end:
+                if transaction.date <= period.end:
+                    depense += transaction.value
+            else:
+                depense += transaction.value
         else:
-            revenu += transaction.value
-    solde = revenu - depense
+            solde += transaction.value
+            if period.start and period.end:
+                if period.start <= transaction.date <= period.end:
+                    revenu += transaction.value
+            elif period.start:
+                if period.start <= transaction.date:
+                    revenu += transaction.value
+            elif period.end:
+                if transaction.date <= period.end:
+                    revenu += transaction.value
+            else:
+                revenu += transaction.value
     return render(request, "domain/index.html", {"domains": domains, "principal_domain": True, "title": "Domain", "solde": solde, "depense": depense, "revenu": revenu})
 
 @login_required()
@@ -43,7 +66,7 @@ def new_domain(request):
             return redirect("domain")
     else:
         form = DomainForm()
-    return render(request, "domain/domain.html", {"form": form, "title": "Create new domain", "action": "New"})
+    return render(request, "form.html", {"form": form, "title": "New domain", "action": "Create new domain"})
 
 @login_required()
 def new_subdomain(request, id):
@@ -59,7 +82,7 @@ def new_subdomain(request, id):
             return redirect("subdomain", id=domain.id)
     else:
         form = DomainForm()
-    return render(request, "domain/domain.html", {"form": form, "title": "Create new subdomain for " + domain.name.lower(), "action": "New"})
+    return render(request, "form.html", {"form": form, "title": "New subdomain", "action": "Create new subdomain for " + domain.name.lower()})
 
 @login_required()
 def edit_domain(request, id):
@@ -75,7 +98,7 @@ def edit_domain(request, id):
             return redirect("subdomain", id=domain.id)
     else:
         form = DomainForm(data={"name": domain.name, "description": domain.description, "excepted_depense": domain.excepted_depense, "excepted_revenu": domain.excepted_revenu})
-    return render(request, "domain/domain.html", {"form": form, "title": "Editing the domain " + domain.name.lower(), "action": "Edit"})
+    return render(request, "form.html", {"form": form, "title": "Edit domain", "action": "Editing the domain " + domain.name.lower()})
 
 @login_required()
 def new_transaction_domain(request, id):
@@ -90,7 +113,7 @@ def new_transaction_domain(request, id):
             return redirect("transaction", id=domain.id)
     else:
         form = TransactionForm(data={"date": date.today(), "depense": True})
-    return render(request, "transaction/transaction.html", {"form": form, "title": "New transaction", "action": "New transaction for " + domain.name.lower()})
+    return render(request, "form.html", {"form": form, "title": "New transaction", "action": "New transaction for " + domain.name.lower()})
 
 @login_required()
 def transaction(request, id):
@@ -112,8 +135,9 @@ def edit_transaction(request, id):
             return redirect("transaction", id=transaction.domain.pk)
     else:
         form = TransactionForm(data={"name": transaction.name, "description": transaction.description, "value": transaction.value, "depense": transaction.depense, "date": transaction.date})
-    return render(request, "transaction/transaction.html", {"form": form, "title": "Edit transaction", "action": "Editing the transaction " + transaction.name.lower()})
+    return render(request, "form.html", {"form": form, "title": "Edit transaction", "action": "Editing the transaction " + transaction.name.lower()})
 
+@login_required()
 def quick_transaction(request):
     if request.method == "POST":
         form = SpeedTransactionForm(request.POST, user=request.user)
@@ -124,4 +148,34 @@ def quick_transaction(request):
             return redirect("quick-transaction")
     else:
         form = SpeedTransactionForm(user=request.user ,data={"date": date.today(), "depense": True})
-    return render(request, "transaction/transaction.html", {"form": form, "title": "New transaction", "action": "New transaction"})
+    return render(request, "form.html", {"form": form, "title": "New transaction", "action": "New transaction"})
+
+@login_required()
+def domain_tree(request):
+    domains = Domain.objects.filter(gestion=Gestion.objects.get(owner=request.user), relation_to_parent_domain=None).order_by("name")
+    tree = ""
+    for domain in domains:
+        tree += domain.get_domain_tree(1)
+    return render(request, "tree/index.html", {"tree": tree})
+
+@login_required()
+def period_to_monitor(request):
+    if request.method == "POST":
+        form = DateIntervalForm(request.POST)
+        if form.is_valid():
+            user_period = DateInterval.objects.get(user=request.user)
+            user_period.start = form.cleaned_data['start']
+            user_period.end = form.cleaned_data['end']
+            user_period.save()
+            return redirect('domain')
+    else:
+        actual_period = DateInterval.objects.get(user=request.user)
+        form = DateIntervalForm(data={"end": actual_period.end, "start": actual_period.start})
+    return render(request, "form.html", {"form": form, "title": "Period to monitor", "action": "Edit monitoring period"})
+
+# def custom(request):
+#     from accounts.models import CustomUser
+#     user = CustomUser.objects.first()
+#     mdate = DateInterval()
+#     mdate.user = user
+#     mdate.save()

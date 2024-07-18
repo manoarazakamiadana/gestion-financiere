@@ -40,6 +40,7 @@ class TransactionAdmin(admin.ModelAdmin):
 @admin.register(DateInterval)
 class DateIntervalAdmin(admin.ModelAdmin):
     list_display = (
+        "user",
         "start",
-        "end"
+        "end",
     )

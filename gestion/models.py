@@ -41,7 +41,12 @@ class Domain(models.Model):
     def get_solde(self):
         return self.get_revenu_total() - self.get_depense_total()
     
-    # ampiana oe get arbre
+    def get_domain_tree(self, i):
+        tree = "└──"+ "───"*(i-1) + " > <a href=\"/domain/view-subdomain/" + str(self.id) + "\" class=\"text-dark\">" + self.name + "</a><br>"
+        subdomains = Domain.objects.filter(relation_to_parent_domain=RelationToParentDomain.objects.get(parent_domain=self))
+        for subdomain in subdomains:
+            tree += f'{subdomain.get_domain_tree(i+1)}'
+        return tree
 
 class RelationToParentDomain(models.Model):
     parent_domain = models.OneToOneField(Domain, on_delete=models.CASCADE, null=False)
@@ -55,8 +60,7 @@ class Transaction(models.Model):
     depense = models.BooleanField(default=True, null=False)
     date = models.DateField(null=False)
 
-# ampiana class oe date le affihcer-na (ohatra oe mois de juillet)
-
 class DateInterval(models.Model):
-    start = models.DateField()
-    end = models.DateField()
+    start = models.DateField(null=True, blank=True)
+    end = models.DateField(null=True, blank=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False)
