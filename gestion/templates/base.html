@@ -28,10 +28,10 @@
                     <div class="my-3">
                         <a href="{% url 'home' %}" class="text-light">Home</a> |
                         <a href="{% url 'domain' %}" class="text-light">Domain</a> |
-                        <a href="{% url 'quick-transaction' %}" class="text-light">Add transaction</a> |
+                        <a href="{% url 'transaction-history' %}" class="text-light">Transaction</a> |
                         <a href="{% url 'period-to-monitor' %}" class="text-light">Monitoring period</a>
                         {% if user.is_superuser %}
-                            <a href="/admin" class="text-light"> | Admin</a>
+                             | <a href="/admin" class="text-light">Admin</a>
                         {% endif %}
                         ||
                         {% if not user.is_authenticated %}

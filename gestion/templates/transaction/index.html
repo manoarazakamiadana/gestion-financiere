@@ -6,11 +6,20 @@
 
 {% block body %}
     <div class="container">
-        <h1 class="my-3">All transaction of {{ domain.name|lower }}</h1>
-        <h4>{{ domain.name }}:</h4><p class="mx-5">{{ domain.description }}</p>
-        <a href="{% url 'new-transaction-domain' id=domain.id %}"><button class="btn btn-primary m-1">Add transaction</button></a>
+        {% if domain %}
+            <h1 class="my-3">All transaction of {{ domain.name|lower }}</h1>
+            <h4>{{ domain.name }}:</h4><p class="mx-5">{{ domain.description }}</p>
+            <a href="{% url 'new-transaction-domain' id=domain.id %}"><button class="btn btn-primary m-1">Add transaction</button></a>
+        {% else %}
+            <h1 class="my-3">Transaction history</h1>
+            <a href="{% url 'quick-transaction' %}"><button class="btn btn-primary m-1">Add transaction</button></a>
+        {% endif %}
         {% if not transactions %}
-            <h2 class="my-3">This domain has no transaction</h2>
+            {% if domain %}
+                <h2 class="my-3">This domain has no transaction</h2>
+            {% else %}
+                <h2 class="my-3">There is no transaction. Add transaction or change your monitoring period to see them</h2>
+            {% endif %}
         {% else %}
             <table class="w-100 m-auto my-3">
                 <thead>

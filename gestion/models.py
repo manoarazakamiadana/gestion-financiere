@@ -1,4 +1,3 @@
-from typing import Iterable
 from django.db import models
 from django.template.defaultfilters import slugify
 from accounts.models import CustomUser
@@ -19,11 +18,26 @@ class Domain(models.Model):
     relation_to_parent_domain = models.ForeignKey("RelationToParentDomain", on_delete=models.SET_NULL, null=True)
     excepted_depense = models.FloatField(default=0)
     excepted_revenu = models.FloatField(default=0)
+    # ampiana eo sary
 
     def get_depense_total(self):
         depense_total = 0
         transactions = Transaction.objects.filter(domain=self)
-        depense_total = sum(transaction.value if transaction.depense else 0 for transaction in transactions)
+        # depense_total = sum(transaction.value if transaction.depense else 0 for transaction in transactions)
+        period = DateInterval.objects.get(user=self.gestion.owner)
+        for transaction in transactions:
+            if transaction.depense:
+                if period.start and period.end:
+                    if period.start <= transaction.date <= period.end:
+                        depense_total += transaction.value
+                elif period.start:
+                    if period.start <= transaction.date:
+                        depense_total += transaction.value
+                elif period.end:
+                    if transaction.date <= period.end:
+                        depense_total += transaction.value
+                else:
+                    depense_total += transaction.value
         relation_to_me = RelationToParentDomain.objects.get(parent_domain=self.id)
         subdomains = Domain.objects.filter(relation_to_parent_domain=relation_to_me)
         depense_total += sum(subdomain.get_depense_total() for subdomain in subdomains)
@@ -32,7 +46,21 @@ class Domain(models.Model):
     def get_revenu_total(self):
         revenu_total = 0
         transactions = Transaction.objects.filter(domain=self)
-        revenu_total = sum(transaction.value if not transaction.depense else 0 for transaction in transactions)
+        # revenu_total = sum(transaction.value if not transaction.depense else 0 for transaction in transactions)
+        period = DateInterval.objects.get(user=self.gestion.owner)
+        for transaction in transactions:
+            if not transaction.depense:
+                if period.start and period.end:
+                    if period.start <= transaction.date <= period.end:
+                        revenu_total += transaction.value
+                elif period.start:
+                    if period.start <= transaction.date:
+                        revenu_total += transaction.value
+                elif period.end:
+                    if transaction.date <= period.end:
+                        revenu_total += transaction.value
+                else:
+                    revenu_total += transaction.value
         relation_to_me = RelationToParentDomain.objects.get(parent_domain=self.id)
         subdomains = Domain.objects.filter(relation_to_parent_domain=relation_to_me)
         revenu_total += sum(subdomain.get_revenu_total() for subdomain in subdomains)

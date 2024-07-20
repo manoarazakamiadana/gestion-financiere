@@ -117,9 +117,23 @@ def new_transaction_domain(request, id):
 
 @login_required()
 def transaction(request, id):
+    period = DateInterval.objects.get(user=request.user)
     domain = Domain.objects.get(id=id)
-    transaction = Transaction.objects.filter(domain=domain)
-    return render(request, "transaction/index.html", {"domain":domain, "transactions":transaction})
+    Alltransactions = Transaction.objects.filter(domain=domain).order_by("value")
+    transactions = []
+    for transaction in Alltransactions:
+        if period.start and period.end:
+            if period.start <= transaction.date <= period.end:
+                transactions.append(transaction)
+        elif period.start:
+            if period.start <= transaction.date:
+                transactions.append(transaction)
+        elif period.end:
+            if transaction.date <= period.end:
+                transactions.append(transaction)
+        else:
+            transactions.append(transaction)
+    return render(request, "transaction/index.html", {"domain":domain, "transactions":transactions})
 
 @login_required()
 def edit_transaction(request, id):
@@ -172,6 +186,27 @@ def period_to_monitor(request):
         actual_period = DateInterval.objects.get(user=request.user)
         form = DateIntervalForm(data={"end": actual_period.end, "start": actual_period.start})
     return render(request, "form.html", {"form": form, "title": "Period to monitor", "action": "Edit monitoring period"})
+
+@login_required()
+def transaction_history(request):
+    period = DateInterval.objects.get(user=request.user)
+    Alltransactions = Transaction.objects.filter(gestion=Gestion.objects.get(owner=request.user)).order_by("date")
+    transactions = []
+    for transaction in Alltransactions:
+        if period.start and period.end:
+            if period.start <= transaction.date <= period.end:
+                transactions.append(transaction)
+        elif period.start:
+            if period.start <= transaction.date:
+                transactions.append(transaction)
+        elif period.end:
+            if transaction.date <= period.end:
+                transactions.append(transaction)
+        else:
+            transactions.append(transaction)
+    return render(request, "transaction/index.html", {"transactions": transactions})
+
+
 
 # def custom(request):
 #     from accounts.models import CustomUser

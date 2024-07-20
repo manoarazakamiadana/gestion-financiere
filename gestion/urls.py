@@ -13,6 +13,7 @@ urlpatterns = [
     path("period-to-monitor/", views.period_to_monitor, name="period-to-monitor"),
     path("quick-transaction/", views.quick_transaction, name="quick-transaction"),
     path("domain/new-subdomain/<int:id>", views.new_subdomain, name="new-subdomain"),
+    path("transaction/history", views.transaction_history, name="transaction-history"),
     path("transaction/edit-transaction/<int:id>", views.edit_transaction, name="edit-transaction"),
     path("transaction/new-transaction/<int:id>", views.new_transaction_domain, name="new-transaction-domain"),
 ]
